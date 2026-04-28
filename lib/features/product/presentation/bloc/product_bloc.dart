@@ -1,7 +1,6 @@
 /**
- * Product BLoC
+ * Product BLoC - Clean & Stable Version
  */
-import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopai_fe/core/usecases/usecase.dart';
@@ -37,7 +36,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     emit(ProductLoading());
+
     final result = await getProducts(NoParams());
+
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
       (products) => emit(ProductsLoaded(products)),
@@ -48,14 +49,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     CreateProductEvent event,
     Emitter<ProductState> emit,
   ) async {
-    emit(ProductLoading());
     final result = await createProduct(event.data);
+
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
-      (product) {
-        emit(ProductCreated(product));
-        add(LoadProductsEvent());
-      },
+      (_) => add(LoadProductsEvent()),
     );
   }
 
@@ -63,14 +61,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     UpdateProductEvent event,
     Emitter<ProductState> emit,
   ) async {
-    emit(ProductLoading());
     final result = await updateProduct(event.id, event.data);
+
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
-      (product) {
-        emit(ProductUpdated(product));
-        add(LoadProductsEvent());
-      },
+      (_) => add(LoadProductsEvent()),
     );
   }
 
@@ -79,13 +74,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     final result = await deleteProduct(event.id);
+
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
-      (_) {
-        emit(ProductDeleted(event.id));
-        add(LoadProductsEvent());
-      },
+      (_) => add(LoadProductsEvent()),
     );
   }
 }
-

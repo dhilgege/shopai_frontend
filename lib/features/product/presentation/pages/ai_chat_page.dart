@@ -111,9 +111,7 @@ class _AiChatPageState extends State<AiChatPage> {
   }
 }
 
-extension on String {
-  void fold(Null Function(Failure) param0, Null Function(ai) param1) {}
-}
+
 
 class ChatMessage extends StatelessWidget {
   final String text;

@@ -50,7 +50,11 @@ class Product extends Equatable {
     );
   }
 
-  String get displayPrice => '\$${price.toStringAsFixed(2)}';
+  String get displayPrice => 'Rp ${price.toStringAsFixed(0)}';
+
+  bool get hasImage => imageUrl != null && imageUrl!.isNotEmpty;
+
+  String get safeCategory => category ?? 'Uncategorized';
 
   @override
   List<Object?> get props => [

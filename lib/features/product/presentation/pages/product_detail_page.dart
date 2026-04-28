@@ -2,6 +2,7 @@
  * Product Detail Page
  */
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopai_fe/core/theme/app_theme.dart';
@@ -41,12 +42,7 @@ class ProductDetailPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditProductPage(product: product),
-                ),
-              );
+              context.go('/edit-product', extra: product);
             },
           ),
           IconButton(
@@ -191,8 +187,8 @@ class ProductDetailPage extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: product.stock > 0
-                          ? AppTheme.primaryColor.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? AppTheme.successColor.withOpacity(0.1)
+                          : AppTheme.errorColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -203,9 +199,9 @@ class ProductDetailPage extends StatelessWidget {
                               ? Icons.inventory_2
                               : Icons.block,
                           size: 20,
-                          color: product.stock > 0
-                              ? AppTheme.primaryColor
-                              : Colors.red,
+                           color: product.stock > 0
+                               ? AppTheme.successColor
+                               : AppTheme.errorColor,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -214,8 +210,8 @@ class ProductDetailPage extends StatelessWidget {
                               : 'Out of Stock',
                           style: TextStyle(
                             color: product.stock > 0
-                                ? AppTheme.primaryColor
-                                : Colors.red,
+                                ? AppTheme.successColor
+                                : AppTheme.errorColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -322,12 +318,12 @@ class ProductDetailPage extends StatelessWidget {
         ),
         title: Row(
           children: [
-            Icon(Icons.delete_outline, color: Colors.red[700]),
+            Icon(Icons.delete_outline, color: AppTheme.errorColor),
             const SizedBox(width: 12),
             Text(
               'Delete Product',
               style: TextStyle(
-                color: Colors.red[700],
+                color: AppTheme.errorColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -353,7 +349,7 @@ class ProductDetailPage extends StatelessWidget {
                 );
               },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppTheme.errorColor,
               foregroundColor: Colors.white,
             ),
             child: const Text('Delete'),

@@ -16,19 +16,32 @@ class AIRemoteDatasourceImpl implements AIRemoteDatasource {
         '/ai/chat',
         data: {
           'message': message,
+          'user_id': 1,
         },
       );
 
-      final raw = response.data;
+      final data = response.data;
 
-      // handle Laravel: {data: {...}} atau langsung [...]
-      final responseText = raw is Map && raw.containsKey('data')
-          ? raw['data']['response'] ?? raw['data']['text'] ?? ''
-          : raw['response'] ?? raw['text'] ?? '';
+      final messageText = (data is Map<String, dynamic>)
+          ? (data['data']?['message'] ??
+              data['data']?['response'] ??
+              data['data']?['text'] ??
+              data['message'] ??
+              data['response'] ??
+              data['text'])
+          : null;
 
-      return responseText.toString();
+      return messageText?.toString() ?? 'No response from AI';
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw Exception('Connection timeout');
+      } else if (e.type == DioExceptionType.connectionError) {
+        throw Exception('Tidak bisa connect ke backend Laravel');
+      } else {
+        throw Exception('AI Error: ${e.message}');
+      }
     } catch (e) {
-      throw Exception('Failed to send message to AI: $e');
+      throw Exception('Unexpected error: $e');
     }
   }
 }
