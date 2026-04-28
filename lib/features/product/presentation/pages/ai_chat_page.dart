@@ -1,6 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:shopai_fe/core/error/failure.dart';
+import 'package:shopai_fe/core/usecases/usecase.dart';
+import 'package:shopai_fe/features/ai/domain/usecases/send_message.dart';
+import 'package:get_it/get_it.dart';
 
 class AiChatPage extends StatefulWidget {
   const AiChatPage({super.key});
@@ -14,29 +16,12 @@ class _AiChatPageState extends State<AiChatPage> {
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
 
-  final String baseUrl = 'http://100.82.100.80:11434';
-  final String model = 'qwen2.5:0.5b';
+  late final SendMessage _sendMessageUseCase;
 
-  Future<String> _callOllama(String text) async {
-    final response = await http
-        .post(
-          Uri.parse('$baseUrl/api/generate'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            "model": model,
-            "prompt": text,
-            "stream": false,
-          }),
-        )
-        .timeout(const Duration(seconds: 60));
-print("SEND REQUEST TO OLLAMA");
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return (data['response'] ?? '').toString();
-    } else {
-      throw Exception('HTTP ${response.statusCode}: ${response.body}');
-    }
-    
+  @override
+  void initState() {
+    super.initState();
+    _sendMessageUseCase = GetIt.instance<SendMessage>();
   }
 
   Future<void> _sendMessage() async {
@@ -49,27 +34,30 @@ print("SEND REQUEST TO OLLAMA");
       _isLoading = true;
     });
 
-    try {
-      final ai = await _callOllama(text);
-
-      setState(() {
-        _messages.add(
-          ChatMessage(
-            text: ai.isEmpty ? "No response" : ai,
-            isUser: false,
-          ),
-        );
-      });
-    } catch (e) {
-      setState(() {
-        _messages.add(
-          ChatMessage(
-            text: "Error: $e",
-            isUser: false,
-          ),
-        );
-      });
-    }
+    final result = await _sendMessageUseCase.call(text);
+    
+    result.fold(
+      (failure) {
+        setState(() {
+          _messages.add(
+            ChatMessage(
+              text: failure.toString(),
+              isUser: false,
+            ),
+          );
+        });
+      },
+      (ai) {
+        setState(() {
+          _messages.add(
+            ChatMessage(
+              text: ai.isEmpty ? "No response" : ai,
+              isUser: false,
+            ),
+          );
+        });
+      }
+    );
 
     setState(() {
       _isLoading = false;

@@ -23,6 +23,33 @@ class ProductsLoaded extends ProductState {
   List<Object> get props => [products];
 }
 
+class ProductCreated extends ProductState {
+  final Product product;
+
+  const ProductCreated(this.product);
+
+  @override
+  List<Object> get props => [product];
+}
+
+class ProductUpdated extends ProductState {
+  final Product product;
+
+  const ProductUpdated(this.product);
+
+  @override
+  List<Object> get props => [product];
+}
+
+class ProductDeleted extends ProductState {
+  final String id;
+
+  const ProductDeleted(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
 class ProductError extends ProductState {
   final String message;
 
@@ -31,3 +58,4 @@ class ProductError extends ProductState {
   @override
   List<Object> get props => [message];
 }
+
