@@ -41,7 +41,7 @@ class _AiChatPageState extends State<AiChatPage> {
         setState(() {
           _messages.add(
             ChatMessage(
-              text: failure.toString(),
+              text: "Error: $failure",
               isUser: false,
             ),
           );
@@ -109,6 +109,10 @@ class _AiChatPageState extends State<AiChatPage> {
       ),
     );
   }
+}
+
+extension on String {
+  void fold(Null Function(Failure) param0, Null Function(ai) param1) {}
 }
 
 class ChatMessage extends StatelessWidget {
