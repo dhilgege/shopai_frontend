@@ -1,20 +1,14 @@
-/**
- * Product Events
- */
 part of 'product_bloc.dart';
 
 abstract class ProductEvent extends Equatable {
   const ProductEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadProductsEvent extends ProductEvent {
   const LoadProductsEvent();
-
-  @override
-  List<Object> get props => [];
 }
 
 class CreateProductEvent extends ProductEvent {
@@ -23,7 +17,7 @@ class CreateProductEvent extends ProductEvent {
   const CreateProductEvent(this.data);
 
   @override
-  List<Object> get props => [data];
+  List<Object?> get props => [data];
 }
 
 class UpdateProductEvent extends ProductEvent {
@@ -33,7 +27,7 @@ class UpdateProductEvent extends ProductEvent {
   const UpdateProductEvent(this.id, this.data);
 
   @override
-  List<Object> get props => [id, data];
+  List<Object?> get props => [id, data];
 }
 
 class DeleteProductEvent extends ProductEvent {
@@ -42,6 +36,5 @@ class DeleteProductEvent extends ProductEvent {
   const DeleteProductEvent(this.id);
 
   @override
-  List<Object> get props => [id];
+  List<Object?> get props => [id];
 }
-

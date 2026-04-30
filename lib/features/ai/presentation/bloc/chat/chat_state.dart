@@ -12,7 +12,10 @@ class ChatInitialState extends ChatState {
 }
 
 class ChatLoadingState extends ChatState {
-  const ChatLoadingState();
+  final List<ChatMessage> messages;
+  const ChatLoadingState(this.messages);
+  @override
+  List<Object> get props => [messages];
 }
 
 class ChatMessageSentState extends ChatState {

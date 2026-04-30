@@ -103,7 +103,7 @@ class ProductDetailPage extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppTheme.primaryColor,
-                          AppTheme.skyBlueDark,
+                          const Color.fromARGB(255, 250, 251, 253),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(24),

@@ -27,7 +27,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _messages.add(userMessage);
     emit(ChatMessageSentState(List.from(_messages)));
 
-    emit(const ChatLoadingState());
+    emit(ChatLoadingState(List.from(_messages)));
 
     final result = await sendMessage(event.message);
 

@@ -58,8 +58,36 @@ class _AiChatPageState extends State<AiChatPage> {
 - Get recommendations
 ''',
           ),
+          const SizedBox(height: 20),
+          const Text("Quick questions:"),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildSuggestionBubble("Apa saja produk yang tersedia?"),
+              _buildSuggestionBubble("Bagaimana cara membeli produk?"),
+              _buildSuggestionBubble("Produk apa yang direkomendasikan?"),
+              _buildSuggestionBubble("Berapa harga produk?"),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSuggestionBubble(String text) {
+    return ElevatedButton(
+      onPressed: () => _handleSend(text),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+        foregroundColor: Theme.of(context).primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+      child: Text(text, style: const TextStyle(fontSize: 14)),
     );
   }
 
@@ -88,9 +116,13 @@ class _AiChatPageState extends State<AiChatPage> {
   }
 
   Widget _buildMessageList(ChatState state) {
-    final messages = state is ChatMessageSentState
+    final messages = (state is ChatMessageSentState)
         ? state.messages
-        : <ChatMessage>[];
+        : (state is ChatLoadingState)
+            ? state.messages
+            : (state is ChatErrorState)
+                ? state.messages
+                : <ChatMessage>[];
 
     if (messages.isEmpty) {
       return SingleChildScrollView(
@@ -131,6 +163,8 @@ class _AiChatPageState extends State<AiChatPage> {
           body: Column(
             children: [
               Expanded(child: _buildMessageList(state)),
+              if (state is ChatLoadingState)
+                const LinearProgressIndicator(),
               _buildInputArea(),
             ],
           ),

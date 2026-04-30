@@ -42,7 +42,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         currentIndex: _selectedIndex,
         selectedItemColor: AppTheme.primaryColor,
         unselectedItemColor: AppTheme.textColor.withOpacity(0.6),
-        backgroundColor: AppTheme.surfaceColor,
+        backgroundColor: const Color.fromARGB(255, 232, 233, 234),
         onTap: _onItemTapped,
       ),
     );

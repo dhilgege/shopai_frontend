@@ -62,7 +62,7 @@ Future<void> init() async {
 
   // AI Repository
   sl.registerLazySingleton<AIRepository>(
-    () => AIRepositoryImpl(remoteDatasource: sl()),
+    () => AIRepositoryImpl(remoteDatasource: sl(), productRepository: sl()),
   );
 
   // AI Use cases

@@ -16,9 +16,12 @@ class ProductItemWidget extends StatelessWidget {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: () {
-          context.go('/product-detail', extra: product);
+          context.push('/product-detail', extra: product);
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -26,35 +29,37 @@ class ProductItemWidget extends StatelessWidget {
           child: Row(
             children: [
               product.imageUrl != null && product.imageUrl!.isNotEmpty
-                  ? Image.network(
-                      product.imageUrl!,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        product.imageUrl!,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _placeholder(),
+                      ),
                     )
-                  : Container(
-                      width: 80,
-                      height: 80,
-                      color: AppTheme.skyBlueLight,
-                      child: Icon(Icons.image,
-                          color: AppTheme.skyBlueDark),
-                    ),
-
+                  : _placeholder(),
               const SizedBox(width: 16),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       product.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(product.description),
+                    Text(
+                      product.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       product.displayPrice,
@@ -70,6 +75,21 @@ class ProductItemWidget extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _placeholder() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: AppTheme.skyBlueLight,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        Icons.image,
+        color: AppTheme.skyBlueDark,
       ),
     );
   }

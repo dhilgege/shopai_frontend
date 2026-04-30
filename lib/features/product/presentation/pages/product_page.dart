@@ -16,8 +16,17 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final TextEditingController _searchController = TextEditingController();
+
   String _searchQuery = '';
   String _selectedCategory = 'All';
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// LOAD PRODUCTS ON PAGE OPEN
+    context.read<ProductBloc>().add(const LoadProductsEvent());
+  }
 
   @override
   void dispose() {
@@ -37,7 +46,6 @@ class _ProductPageState extends State<ProductPage> {
     });
   }
 
-  // ✅ FIX: Product type + null safety
   List<Product> _filterProducts(List<Product> products) {
     return products.where((product) {
       final name = product.name.toLowerCase();
@@ -47,7 +55,8 @@ class _ProductPageState extends State<ProductPage> {
       final matchesSearch =
           name.contains(_searchQuery) || desc.contains(_searchQuery);
 
-      final matchesCategory = _selectedCategory == 'All' ||
+      final matchesCategory =
+          _selectedCategory == 'All' ||
           category == _selectedCategory.toLowerCase();
 
       return matchesSearch && matchesCategory;
@@ -70,92 +79,87 @@ class _ProductPageState extends State<ProductPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.smart_toy),
-            tooltip: 'AI Assistant',
-            onPressed: () {
-              context.go('/ai-chat');
-            },
+            onPressed: () => context.go('/ai-chat'),
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(120),
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // SEARCH
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.skyBlueLight,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: _onSearchChanged,
-                    decoration: InputDecoration(
-                      hintText: 'Search products...',
-                      prefixIcon: Icon(Icons.search,
-                          color: AppTheme.skyBlueDark),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.all(14),
+            child: BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, state) {
+                final products =
+                    state is ProductsLoaded ? state.products : <Product>[];
+
+                final categories = _getCategories(products);
+
+                return Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.skyBlueLight,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _onSearchChanged,
+                        decoration: InputDecoration(
+                          hintText: 'Search products...',
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: AppTheme.skyBlueDark,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(14),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // CATEGORY
-                BlocBuilder<ProductBloc, ProductState>(
-                  builder: (context, state) {
-                    if (state is ProductsLoaded) {
-                      final categories = _getCategories(state.products);
-
-                      return SizedBox(
-                        height: 40,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            FilterChip(
-                              label: const Text('All'),
-                              selected: _selectedCategory == 'All',
-                              onSelected: (_) =>
-                                  _onCategoryChanged('All'),
-                            ),
-                            const SizedBox(width: 8),
-                            ...categories.map(
-                              (category) => Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: FilterChip(
-                                  label: Text(category),
-                                  selected:
-                                      _selectedCategory == category,
-                                  onSelected: (_) =>
-                                      _onCategoryChanged(category),
-                                ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 40,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          FilterChip(
+                            label: const Text('All'),
+                            selected: _selectedCategory == 'All',
+                            onSelected: (_) => _onCategoryChanged('All'),
+                          ),
+                          const SizedBox(width: 8),
+                          ...categories.map(
+                            (category) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(category),
+                                selected: _selectedCategory == category,
+                                onSelected: (_) =>
+                                    _onCategoryChanged(category),
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
       ),
 
-      // BODY
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
-          if (state is ProductLoading ||
-              state is ProductInitial) {
-            return const Center(child: CircularProgressIndicator());
+          if (state is ProductLoading || state is ProductInitial) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (state is ProductError) {
-            return Center(child: Text(state.message));
+            return Center(
+              child: Text(state.message),
+            );
           }
 
           if (state is ProductsLoaded) {
@@ -169,9 +173,9 @@ class _ProductPageState extends State<ProductPage> {
 
             return RefreshIndicator(
               onRefresh: () async {
-                context
-                    .read<ProductBloc>()
-                    .add(const LoadProductsEvent());
+                context.read<ProductBloc>().add(
+                      const LoadProductsEvent(),
+                    );
               },
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -189,11 +193,8 @@ class _ProductPageState extends State<ProductPage> {
         },
       ),
 
-      // FLOATING ACTION BUTTON
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go('/create-product');
-        },
+        onPressed: () => context.go('/create-product'),
         child: const Icon(Icons.add),
       ),
     );

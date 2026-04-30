@@ -1,14 +1,11 @@
-/**
- * Product BLoC - Clean & Stable Version
- */
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shopai_fe/core/usecases/usecase.dart';
 import 'package:shopai_fe/features/product/domain/entities/product.dart';
-import 'package:shopai_fe/features/product/domain/usecases/get_products.dart';
 import 'package:shopai_fe/features/product/domain/usecases/create_product.dart';
-import 'package:shopai_fe/features/product/domain/usecases/update_product.dart';
 import 'package:shopai_fe/features/product/domain/usecases/delete_product.dart';
+import 'package:shopai_fe/features/product/domain/usecases/get_products.dart';
+import 'package:shopai_fe/features/product/domain/usecases/update_product.dart';
 
 part 'product_event.dart';
 part 'product_state.dart';
@@ -49,11 +46,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     CreateProductEvent event,
     Emitter<ProductState> emit,
   ) async {
+    emit(ProductActionLoading());
+
     final result = await createProduct(event.data);
 
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
-      (_) => add(LoadProductsEvent()),
+      (_) => emit(ProductActionSuccess()),
     );
   }
 
@@ -61,11 +60,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     UpdateProductEvent event,
     Emitter<ProductState> emit,
   ) async {
+    emit(ProductActionLoading());
+
     final result = await updateProduct(event.id, event.data);
 
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
-      (_) => add(LoadProductsEvent()),
+      (_) => emit(ProductActionSuccess()),
     );
   }
 
@@ -73,11 +74,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     DeleteProductEvent event,
     Emitter<ProductState> emit,
   ) async {
+    emit(ProductActionLoading());
+
     final result = await deleteProduct(event.id);
 
     result.fold(
       (failure) => emit(ProductError(failure.toString())),
-      (_) => add(LoadProductsEvent()),
+      (_) => emit(ProductActionSuccess()),
     );
   }
 }
